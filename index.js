@@ -1,9 +1,11 @@
+require("dotenv").config();
+
 const express = require("express");
 const cors = require("cors");
-const port = 3000;
+const port = process.env.PORT;
 const ibmdb = require("ibm_db");
 
-const connStr = `DATABASE=bludb;HOSTNAME=9938aec0-8105-433e-8bf9-0fbb7e483086.c1ogj3sd0tgtu0lqde00.databases.appdomain.cloud;PORT=32459;PROTOCOL=TCPIP;UID=dnz26424;PWD=pPfnoisbJDM2rXM3;Security=SSL;`;
+const connStr = `DATABASE=${process.env.DATABASE};HOSTNAME=${process.env.HOSTNAME};PORT=${process.env.DB2_PORT};PROTOCOL=TCPIP;UID=${process.env.UID};PWD=${process.env.PWD};Security=SSL;`;
 
 const app = express();
 
