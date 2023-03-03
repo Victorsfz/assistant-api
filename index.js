@@ -5,7 +5,7 @@ const cors = require("cors");
 const port = process.env.PORT;
 const ibmdb = require("ibm_db");
 
-const connStr = `DATABASE=${process.env.DATABASE};HOSTNAME=${process.env.HOSTNAME};PORT=${process.env.DB2_PORT};PROTOCOL=TCPIP;UID=${process.env.UID};PWD=${process.env.PWD};Security=SSL;`;
+const connStr = `DATABASE=${process.env.DATABASE};HOSTNAME=${process.env.HOSTNAME};PORT=${process.env.DB2_PORT};PROTOCOL=TCPIP;UID=dnz26424;PWD=pPfnoisbJDM2rXM3;Security=SSL;`;
 
 const app = express();
 
@@ -24,18 +24,23 @@ const findUser = async (payload) => {
   }
 };
 
+const dateDifference = async (payload) => {
+  let checkIn = new Date(payload[0].CHECK_IN)
+  let checkOut = new Date(payload[0].CHECK_OUT)
+  let difference = checkOut.getTime() - checkIn.getTime();
+  let totalDays = Math.ceil(difference / (1000 * 3600 * 24)); 
+  return totalDays;
+};
+
 const updateDate = async (payload) => {
-  console.log(payload.body.ID);
   try {
-    console.log(payload.body);
     const result = await findUser(payload);
-    let newCheckOut = new Date(payload.body.checkIn);
-    newCheckOut.setDate(newCheckOut.getDate() + result[0].STAY);
-    newCheckOut = newCheckOut.toJSON().substring(0, 10);
-    console.log(newCheckOut);
-    const db2String = `UPDATE RESERVATIONS SET CHECK_IN = '${payload.body.checkIn}', CHECK_OUT = '${newCheckOut}' WHERE ID LIKE '${payload.body.ID}';`;
+    const stayLength = await dateDifference(result)
+    let newCheckOut = new Date(payload.body.newCheckIn);
+    newCheckOut.setDate(newCheckOut.getDate() + stayLength);
+    newCheckOut = newCheckOut.toLocaleDateString("en-US")
+    const db2String = `UPDATE RESERVATIONS SET CHECK_IN = '${payload.body.newCheckIn}', CHECK_OUT = '${newCheckOut}' WHERE ID LIKE '${payload.body.ID}';`;
     const data = await connection.query(db2String);
-    console.log(data);
     return data;
   } catch (err) {
     console.log(err);
