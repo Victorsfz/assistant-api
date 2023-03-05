@@ -72,6 +72,10 @@ app.post("/changeDate", async (req, res) => {
   res.send(result);
 });
 
+app.get("/", (req, res) => {
+  res.send("Funcionando")
+})
+
 app.listen(port, async () => {
   console.log(`Running service on port ${port}`);
 });
